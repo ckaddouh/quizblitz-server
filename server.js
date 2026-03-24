@@ -1,8 +1,16 @@
 const express = require('express')
 const cors = require('cors')
+const questions = require('./data/questions')
+
 
 const app = express()
+
 const PORT = 3000
+
+// GET /api/questions — returns all questions
+app.get('/api/questions', (req, res) => {
+  res.json(questions)
+})
 
 // Middleware
 app.use(cors())
