@@ -111,6 +111,43 @@ app.post('/api/auth/register', async (req, res) => {
   }
 })
 
+// POST /api/auth/login — log in and receive a token
+app.post('/api/auth/login', async (req, res) => {
+  const { email, password } = req.body
+
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and password are required' })
+  }
+
+  try {
+    const user = await User.findOne({ email })
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid email or password' })
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.passwordHash)
+    if (!passwordMatch) {
+      return res.status(401).json({ error: 'Invalid email or password' })
+    }
+
+    const token = jwt.sign(
+      { userId: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN }
+    )
+
+    res.json({
+      token,
+      userId: user._id,
+      email: user.email
+    })
+
+  } catch (error) {
+    console.error('Login error:', error.message)
+    res.status(500).json({ error: 'Login failed' })
+  }
+})
+
 
 // Connect to MongoDB, then start the server
 mongoose.connect(process.env.MONGODB_URI)
