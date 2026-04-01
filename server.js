@@ -4,6 +4,7 @@ const cors = require('cors')
 const mongoose = require('mongoose')
 const questions = require('./data/questions')
 const Score = require('./models/Score')
+const User = require('./models/User')
 
 
 
